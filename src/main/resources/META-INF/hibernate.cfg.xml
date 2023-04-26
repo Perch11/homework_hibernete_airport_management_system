@@ -9,7 +9,7 @@
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">1107</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/hibernete_demo</property>
-<!--       !&#45;&#45; <property name="current_session_context_class">thread</property>-->
+
         <property name="hbm2ddl.auto">update</property>
 
         <property name="show_sql">true</property>
@@ -18,6 +18,7 @@
         <mapping class="com.airport.persistent.Company"/>
         <mapping class="com.airport.persistent.Passenger"/>
         <mapping class="com.airport.persistent.Trip"/>
+        <mapping class="com.airport.persistent.PassInTrip"/>
 
     </session-factory>
 </hibernate-configuration>

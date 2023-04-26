@@ -5,26 +5,32 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
-@Table(name = "pass_in_trip")
+@Table(name = "pass_in_trip",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"tripnumber", "passenger_id", "place"})}
+)
 public class PassInTrip {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany
-    @JoinColumn(name = "passenger_id", referencedColumnName = "id", nullable = false)
-    private List<Passenger> passengers;
+    @ManyToOne
+    @JoinColumn(name = "tripnumber", referencedColumnName = "tripnumber")
+    private Trip trip;
 
-    @OneToMany
-    @JoinColumn(name = "trip_id", referencedColumnName = "id", nullable = false)
-    private List<Trip> trips;
+    @ManyToOne
+    @JoinColumn(name = "passenger_id", referencedColumnName = "id")
+    private Passenger passenger;
 
-    @Column(nullable = false, updatable = false)
+    @Column(updatable = false, nullable = false)
     private Timestamp time;
 
-    @Column(nullable = false, length = 3)
+    @Column(name = "place", nullable = false, updatable = false, length = 3)
     private String place;
+
+
+    public PassInTrip() {
+    }
 
 
     public int getId() {
@@ -35,20 +41,20 @@ public class PassInTrip {
         this.id = id;
     }
 
-    public List<Passenger> getPassengers() {
-        return passengers;
+    public Trip getTrip() {
+        return trip;
     }
 
-    public void setPassengers(List<Passenger> passengers) {
-        this.passengers = passengers;
+    public void setTrip(Trip trip) {
+        this.trip = trip;
     }
 
-    public List<Trip> getTrips() {
-        return trips;
+    public Passenger getPassenger() {
+        return passenger;
     }
 
-    public void setTrips(List<Trip> trips) {
-        this.trips = trips;
+    public void setPassenger(Passenger passenger) {
+        this.passenger = passenger;
     }
 
     public Timestamp getTime() {

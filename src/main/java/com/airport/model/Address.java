@@ -6,6 +6,12 @@ public class Address {
     private String country;
     private String city;
 
+    public Address(int id, String country, String city) {
+        this.id = id;
+        this.country = country;
+        this.city = city;
+    }
+
     public Address(final String country, final String city) {
         setCountry(country);
         setCity(city);

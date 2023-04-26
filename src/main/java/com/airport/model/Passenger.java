@@ -62,9 +62,9 @@ public class Passenger {
     }
 
     public void setAddress(final Address address) {
-//        if (address == null) {
-//            throw new NullPointerException("Passed null value as 'address': ");
-//        }
+        if (address == null) {
+            throw new NullPointerException("Passed null value as 'address': ");
+        }
         this.address = address;
     }
 

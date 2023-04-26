@@ -1,5 +1,7 @@
 package com.airport.service;
 
+import com.airport.convert_classes.mod_to_per.ModToPerAddress;
+import com.airport.convert_classes.per_to_mod.PerToModAddress;
 import com.airport.model.Address;
 import com.airport.repository.AddressRepository;
 import org.hibernate.HibernateException;
@@ -14,71 +16,67 @@ import java.util.Set;
 public class AddressService implements AddressRepository {
 
     private Session session;
-
+    private static final ModToPerAddress MOD_TO_PER = new ModToPerAddress();
+    private static final PerToModAddress PER_TO_MOD = new PerToModAddress();
 
     @Override
     public Address getBy(int id) {
         checkId(id);
         com.airport.persistent.Address address;
+        Transaction transaction = null;
 
         try {
+            transaction = session.beginTransaction();
             address = session.get(com.airport.persistent.Address.class, id);
             if (address == null) {
+                transaction.rollback();
                 return null;
             }
-            Address address1 = new Address();
-            address1.setId(address.getId());
-            address1.setCity(address.getCity());
-            address1.setCountry(address.getCountry());
-            return address1;
-        } catch (Exception e) {
+            transaction.commit();
+            return PER_TO_MOD.getModelFromPersistent(address);
+        } catch (HibernateException e) {
+            assert transaction != null;
+            transaction.rollback();
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public Set<Address> getAll() {
+        Transaction transaction = null;
 
         try {
+            transaction = session.beginTransaction();
             TypedQuery<com.airport.persistent.Address> query = session.createQuery("FROM Address", com.airport.persistent.Address.class);
 
             List<com.airport.persistent.Address> list = query.getResultList();
             if (list.isEmpty()) {
+                transaction.rollback();
                 return null;
             }
             Set<Address> list1 = new LinkedHashSet<>(list.size());
             for (com.airport.persistent.Address item : list) {
-                Address address1 = new Address();
-                address1.setId(item.getId());
-                address1.setCity(item.getCity());
-                address1.setCountry(item.getCountry());
+                Address address1 = PER_TO_MOD.getModelFromPersistent(item);
+
                 list1.add(address1);
             }
+            transaction.commit();
             return list1;
-        } catch (Exception e) {
-
+        } catch (HibernateException e) {
+            assert transaction != null;
+            transaction.rollback();
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public Set<Address> get(int offset, int perPage, String sort) {
-        if (offset <= 0 || perPage <= 0) {
-            throw new IllegalArgumentException("Passed non-positive value as 'offset' or 'perPage': ");
-        }
-        if (sort == null || sort.isEmpty()) {
-            throw new IllegalArgumentException("Passed null or empty value as 'sort': ");
-        }
-        if (!sort.equals("id") && !sort.equals("country") && !sort.equals("city")) {
-            throw new IllegalArgumentException("Parameter 'sort' must be 'id' or 'country' or 'city': ");
-        }
+
+        checkParamGetMethod(offset,perPage,sort);
 
         Transaction transaction = null;
-
         try {
             transaction = session.beginTransaction();
-
-            //String hql = "select c from company as c order by :sort limit :perPage offset :offset";
             TypedQuery<List<com.airport.persistent.Address>> addresses = session.createQuery("FROM Address order by " + sort);
             addresses.setFirstResult(offset);
             addresses.setMaxResults(perPage);
@@ -92,14 +90,8 @@ public class AddressService implements AddressRepository {
             Set<Address> addressSet = new LinkedHashSet<>(addresses.getResultList().size());
 
             for (int i = 0; i < addresses.getResultList().size(); i++) {
-                Address tempAddress = new Address();
                 com.airport.persistent.Address tempPerAddress = (com.airport.persistent.Address) addresses.getResultList().get(i);
-
-                tempAddress.setId(tempPerAddress.getId());
-                tempAddress.setCountry(tempPerAddress.getCountry());
-                tempAddress.setCity(tempPerAddress.getCity());
-
-                addressSet.add(tempAddress);
+                addressSet.add(PER_TO_MOD.getModelFromPersistent(tempPerAddress));
             }
 
             transaction.commit();
@@ -111,15 +103,29 @@ public class AddressService implements AddressRepository {
         }
     }
 
+    private void checkParamGetMethod(int offset,int perPage,String sort){
+        if (offset <= 0 || perPage <= 0) {
+            throw new IllegalArgumentException("Passed non-positive value as 'offset' or 'perPage': ");
+        }
+        if (sort == null || sort.isEmpty()) {
+            throw new IllegalArgumentException("Passed null or empty value as 'sort': ");
+        }
+        if (!sort.equals("id") && !sort.equals("country") && !sort.equals("city")) {
+            throw new IllegalArgumentException("Parameter 'sort' must be 'id' or 'country' or 'city': ");
+        }
+    }
+
     @Override
     public Address save(Address item) {
         checkNull(item);
+
+        com.airport.persistent.Address address = MOD_TO_PER.getPersistentFromModel(item);
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
-            com.airport.persistent.Address address = new com.airport.persistent.Address();
-            address.setCity(item.getCity());
-            address.setCountry(item.getCountry());
+//            com.airport.persistent.Address address = new com.airport.persistent.Address();
+//            address.setCity(item.getCity());
+//            address.setCountry(item.getCountry());
             session.save(address);
             item.setId(address.getId());
 

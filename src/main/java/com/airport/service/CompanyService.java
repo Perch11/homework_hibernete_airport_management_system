@@ -1,19 +1,44 @@
 package com.airport.service;
 
+import com.airport.convert_classes.mod_to_per.ModToPerAddress;
+import com.airport.convert_classes.mod_to_per.ModToPerCompany;
+import com.airport.convert_classes.per_to_mod.PerToModAddress;
+import com.airport.convert_classes.per_to_mod.PerToModCompany;
 import com.airport.model.Company;
 import com.airport.repository.CompanyRepository;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.Set;
 
 public class CompanyService implements CompanyRepository {
 
     private Session session;
+    private static final ModToPerCompany MOD_TO_PER = new ModToPerCompany();
+    private static final PerToModCompany PER_TO_MOD = new PerToModCompany();
 
 
     @Override
     public Company getBy(int id) {
-        return null;
+        checkId(id);
+        com.airport.persistent.Company company;
+        Transaction transaction = null;
+
+        try {
+            transaction = session.beginTransaction();
+            company = session.get(com.airport.persistent.Company.class, id);
+            if (company == null) {
+                transaction.rollback();
+                return null;
+            }
+            transaction.commit();
+            return PER_TO_MOD.getModelFromPersistent(company);
+        } catch (HibernateException e) {
+            assert transaction != null;
+            transaction.rollback();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
