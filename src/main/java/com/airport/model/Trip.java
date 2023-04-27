@@ -1,5 +1,7 @@
 package com.airport.model;
 
+import com.airport.validator.Validator;
+
 import java.sql.Timestamp;
 
 public class Trip {
@@ -36,9 +38,7 @@ public class Trip {
     }
 
     public void setTripNumber(final int tripNumber) {
-        if (tripNumber <= 0) {
-            throw new IllegalArgumentException("'tripNumber' must be positive number: ");
-        }
+        Validator.checkId(tripNumber);
         this.tripNumber = tripNumber;
     }
 
@@ -47,7 +47,7 @@ public class Trip {
     }
 
     public void setCompany(final Company company) {
-        checkNull(company);
+        Validator.checkNull(company);
         this.company = company;
     }
 
@@ -56,7 +56,7 @@ public class Trip {
     }
 
     public void setAirplane(final String airplane) {
-        validateString(airplane);
+        Validator.validateString(airplane);
         this.airplane = airplane;
     }
 
@@ -65,7 +65,7 @@ public class Trip {
     }
 
     public void setTownFrom(final String townFrom) {
-        validateString(townFrom);
+        Validator.validateString(townFrom);
         this.townFrom = townFrom;
     }
 
@@ -74,7 +74,7 @@ public class Trip {
     }
 
     public void setTownTo(final String townTo) {
-        validateString(townTo);
+        Validator.validateString(townTo);
         this.townTo = townTo;
     }
 
@@ -83,7 +83,7 @@ public class Trip {
     }
 
     public void setTimeOut(final Timestamp timeOut) {
-        checkNull(timeOut);
+        Validator.checkNull(timeOut);
         this.timeOut = timeOut;
     }
 
@@ -92,7 +92,7 @@ public class Trip {
     }
 
     public void setTimeIn(final Timestamp timeIn) {
-        checkNull(timeIn);
+        Validator.checkNull(timeIn);
         this.timeIn = timeIn;
     }
 
@@ -107,17 +107,5 @@ public class Trip {
                 ", timeOut=" + timeOut +
                 ", timeIn=" + timeIn +
                 "}\n";
-    }
-
-    private void validateString(final String string) {
-        if (string == null || string.isEmpty()) {
-            throw new IllegalArgumentException("Passed null or empty value: ");
-        }
-    }
-
-    private void checkNull(final Object obj) {
-        if (obj == null) {
-            throw new NullPointerException("Passed null value: ");
-        }
     }
 }

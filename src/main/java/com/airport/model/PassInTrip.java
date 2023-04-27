@@ -1,7 +1,7 @@
 package com.airport.model;
 
-import com.airport.persistent.Passenger;
-import com.airport.persistent.Trip;
+import com.airport.validator.Validator;
+
 import java.sql.Timestamp;
 
 public class PassInTrip {
@@ -45,9 +45,8 @@ public class PassInTrip {
         return id;
     }
 
-    public void setId( final int id) {
-        if (id <= 0)
-            throw new IllegalArgumentException("'passintrip' id must be positive number: ");
+    public void setId(final int id) {
+        Validator.checkId(id);
         this.id = id;
     }
 
@@ -55,8 +54,8 @@ public class PassInTrip {
         return trip;
     }
 
-    public void setTrip( final Trip trip) {
-        checkNull(trip);
+    public void setTrip(final Trip trip) {
+        Validator.checkNull(trip);
         this.trip = trip;
     }
 
@@ -65,7 +64,7 @@ public class PassInTrip {
     }
 
     public void setPassenger(final Passenger passenger) {
-        checkNull(passenger);
+        Validator.checkNull(passenger);
         this.passenger = passenger;
     }
 
@@ -74,7 +73,7 @@ public class PassInTrip {
     }
 
     public void setTime(final Timestamp time) {
-        checkNull(time);
+        Validator.checkNull(time);
         this.time = time;
     }
 
@@ -83,20 +82,7 @@ public class PassInTrip {
     }
 
     public void setPlace(final String place) {
-        validateString(place);
+        Validator.validateString(place);
         this.place = place;
-    }
-
-    private void checkNull(final Object obj) {
-        if (obj == null) {
-            throw new NullPointerException("Passed null value: ");
-        }
-    }
-
-
-    private void validateString(final String str) {
-        if (str == null || str.isEmpty()) {
-            throw new IllegalArgumentException("Passed null or empty value: ");
-        }
     }
 }

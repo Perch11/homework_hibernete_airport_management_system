@@ -1,5 +1,7 @@
 package com.airport.model;
 
+import com.airport.validator.Validator;
+
 import java.sql.Date;
 
 public class Company {
@@ -27,9 +29,7 @@ public class Company {
     }
 
     public void setId(final int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("'id' must be positive number: ");
-        }
+        Validator.checkId(id);
         this.id = id;
     }
 
@@ -38,9 +38,7 @@ public class Company {
     }
 
     public void setName(final String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Passed null or empty value as 'name': ");
-        }
+        Validator.validateString(name);
         this.name = name;
     }
 
@@ -49,9 +47,7 @@ public class Company {
     }
 
     public void setFoundDate(final Date foundDate) {
-        if (foundDate == null) {
-            throw new NullPointerException("Passed null value as 'foundDate': ");
-        }
+        Validator.checkNull(foundDate);
         this.foundDate = foundDate;
     }
 

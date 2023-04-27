@@ -1,5 +1,7 @@
 package com.airport.model;
 
+import com.airport.validator.Validator;
+
 public class Address {
 
     private int id;
@@ -25,9 +27,7 @@ public class Address {
     }
 
     public void setId(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("'id' must be positive number: ");
-        }
+        Validator.checkId(id);
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class Address {
     }
 
     public void setCountry(final String country) {
-        validateString(country);
+        Validator.validateString(country);
         this.country = country;
     }
 
@@ -45,7 +45,7 @@ public class Address {
     }
 
     public void setCity(final String city) {
-        validateString(city);
+        Validator.validateString(city);
         this.city = city;
     }
 
@@ -58,9 +58,4 @@ public class Address {
                 "}\n";
     }
 
-    private void validateString(final String str) {
-        if (str == null || str.isEmpty()) {
-            throw new IllegalArgumentException("Passed null or empty value: ");
-        }
-    }
 }

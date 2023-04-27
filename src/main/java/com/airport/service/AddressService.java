@@ -76,7 +76,6 @@ public class AddressService implements AddressRepository {
             session.close();
         }
     }
-
     @Override
     public Set<Address> get(int offset, int perPage, String sort) {
 
@@ -113,7 +112,6 @@ public class AddressService implements AddressRepository {
         }
     }
 
-
     @Override
     public Address save(Address item) {
         Validator.checkNull(item);
@@ -137,7 +135,6 @@ public class AddressService implements AddressRepository {
             session.close();
         }
     }
-
     @Override
     public boolean updateBy(int id, Address item) {
         Validator.checkId(id);
@@ -164,7 +161,6 @@ public class AddressService implements AddressRepository {
             session.close();
         }
     }
-
     @Override
     public boolean deleteBy(int id) {
         Validator.checkId(id);
@@ -194,7 +190,6 @@ public class AddressService implements AddressRepository {
             session.close();
         }
     }
-
     private boolean existsPassengerBy(int addressId) {
         Validator.checkId(addressId);
 

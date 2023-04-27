@@ -11,7 +11,7 @@ public class ModToPerPassInTrip extends ModToPer<PassInTrip, com.airport.persist
     public com.airport.persistent.PassInTrip getPersistentFromModel(PassInTrip model) {
         Validator.checkNull(model);
         com.airport.persistent.PassInTrip persistent = new com.airport.persistent.PassInTrip();
-//          persistent.setTrip(MOD_TO_PER_TRIP.getPersistentFromModel(model.getTrip()));
+        persistent.setTrip(MOD_TO_PER_TRIP.getPersistentFromModel(model.getTrip()));
         return persistent;
     }
 }

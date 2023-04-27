@@ -35,6 +35,12 @@ public class Validator {
             throw new NullPointerException("Null Pointer Exception cavd tanem");
         }
     }
+    public static void validateString(String str) {
+        checkNull(str);
+        if (str.isEmpty()) {
+            throw new IllegalArgumentException("Passed empty value: ");
+        }
+    }
 
 
 }
