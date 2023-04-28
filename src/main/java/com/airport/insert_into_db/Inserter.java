@@ -1,5 +1,6 @@
 package com.airport.insert_into_db;
 
+import com.airport.hibernate.HibernateUtil;
 import com.airport.persistent.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -18,7 +19,7 @@ import java.util.List;
 
 
 public class Inserter {
-    private Session session;
+     Session session;
 
     private static final String ROOT_PATH =
             "C:\\Users\\Perch\\IdeaProjects\\homework_hibernete_airport_management_system\\src\\main\\resources\\";
@@ -35,6 +36,7 @@ public class Inserter {
         List<String> lines = readLinesOfFileFrom(PATH_COMPANY_TXT);
 
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
 
             for (int i = 0; i < (lines != null ? lines.size() : 0); i++) {
@@ -61,6 +63,8 @@ public class Inserter {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
+        }finally {
+            session.close();
         }
     }
 
@@ -70,7 +74,7 @@ public class Inserter {
         BufferedReader bufferedReader = null;
         Transaction transaction = null;
         try {
-
+            session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
             fileReader = new FileReader(
                     "C:\\Users\\Perch\\IdeaProjects\\homework_hibernete\\src\\main\\resources\\addresses.txt");
@@ -99,6 +103,8 @@ public class Inserter {
                 bufferedReader.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }finally {
+                session.close();
             }
         }
     }
@@ -107,6 +113,7 @@ public class Inserter {
 
         Transaction transaction = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             transaction = session.beginTransaction();
             List<String> lines = readLinesOfFileFrom(PATH_PASSENGER_TXT);
 
@@ -133,6 +140,8 @@ public class Inserter {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
+        }finally {
+            session.close();
         }
     }
 

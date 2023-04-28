@@ -14,7 +14,7 @@ public interface CommonRepository<T> {
 
     T save(T item);
 
-    boolean updateBy(int id, T item);
+   // boolean updateBy(int id, T item);
 
     boolean deleteBy(int id);
 }

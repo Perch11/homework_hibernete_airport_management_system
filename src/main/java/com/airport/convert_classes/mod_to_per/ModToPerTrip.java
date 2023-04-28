@@ -12,6 +12,7 @@ public class ModToPerTrip extends ModToPer<Trip, com.airport.persistent.Trip> {
 
         Validator.checkNull(model);
         com.airport.persistent.Trip persistent = new com.airport.persistent.Trip();
+        persistent.setTripNumber(model.getTripNumber());
         persistent.setCompany(MOD_TO_PER.getPersistentFromModel(model.getCompany()));
         persistent.setAirplane(model.getAirplane());
         persistent.setTimeIn(model.getTimeIn());

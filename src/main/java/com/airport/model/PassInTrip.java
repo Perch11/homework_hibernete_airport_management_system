@@ -85,4 +85,15 @@ public class PassInTrip {
         Validator.validateString(place);
         this.place = place;
     }
+
+    @Override
+    public String toString() {
+        return "PassInTrip{" +
+                "id=" + id +
+                ", trip=" + trip +
+                ", passenger=" + passenger +
+                ", time=" + time +
+                ", place='" + place + '\'' +
+                '}';
+    }
 }

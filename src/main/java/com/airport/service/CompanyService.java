@@ -202,9 +202,10 @@ public class CompanyService implements CompanyRepository {
             transaction = session.beginTransaction();
             String hql = "select t from Trip as t where t.company = :companyId";
             TypedQuery<com.airport.persistent.Trip> tripTypedQuery = session.createQuery(hql);
+            tripTypedQuery.setParameter("companyId", companyId);
             transaction.commit();
 
-            return tripTypedQuery != null;
+            return !tripTypedQuery.getResultList().isEmpty();
         } catch (HibernateException e) {
             assert transaction != null;
             transaction.rollback();
@@ -212,6 +213,27 @@ public class CompanyService implements CompanyRepository {
         } finally {
             session.close();
         }
+    }
+
+    public boolean exists(com.airport.model.Company company) {
+        Validator.checkNull(company);
+
+        for (Company item : getAll()) {
+            if (company.equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public int getId(com.airport.model.Company company){
+        Validator.checkNull(company);
+
+        for (Company item : getAll()) {
+            if (company.equals(item)) {
+                return item.getId();
+            }
+        }
+        return -1;
     }
 
 }

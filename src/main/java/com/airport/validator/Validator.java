@@ -13,7 +13,8 @@ public class Validator {
             throw new IllegalArgumentException("Parameter 'sort' must be 'id' or 'country' or 'city': ");
         }
     }
-    public static void checkParamGetMethodAddress(int offset, int perPage, String sort){
+
+    public static void checkParamGetMethodAddress(int offset, int perPage, String sort) {
         if (offset <= 0 || perPage <= 0) {
             throw new IllegalArgumentException("Passed non-positive value as 'offset' or 'perPage': ");
         }
@@ -24,6 +25,7 @@ public class Validator {
             throw new IllegalArgumentException("Parameter 'sort' must be 'id' or 'country' or 'city': ");
         }
     }
+
     public static void checkId(int id) {
         if (id <= 0) {
             throw new IllegalArgumentException("'id' must be a positive number: ");
@@ -35,12 +37,21 @@ public class Validator {
             throw new NullPointerException("Null Pointer Exception cavd tanem");
         }
     }
-    public static void validateString(String str) {
+
+        public static void validateString(String str) {
         checkNull(str);
         if (str.isEmpty()) {
             throw new IllegalArgumentException("Passed empty value: ");
         }
     }
+//    public static void validateString(String str) {
+//        checkNull(str);
+//        if (str.isEmpty()) {
+//            String argumentName = new Object() {
+//            }.getClass().getEnclosingMethod().getParameters()[0].getName();
+//            throw new IllegalArgumentException("Passed empty value as '" + argumentName + "': ");
+//        }
+//    }
 
 
 }

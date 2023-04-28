@@ -12,6 +12,9 @@ public class ModToPerPassInTrip extends ModToPer<PassInTrip, com.airport.persist
         Validator.checkNull(model);
         com.airport.persistent.PassInTrip persistent = new com.airport.persistent.PassInTrip();
         persistent.setTrip(MOD_TO_PER_TRIP.getPersistentFromModel(model.getTrip()));
+        persistent.setPassenger(MOD_TO_PER_PASSENGER.getPersistentFromModel(model.getPassenger()));
+        persistent.setPlace(model.getPlace());
+        persistent.setTime(model.getTime());
         return persistent;
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface PassengerRepository extends CommonRepository<Passenger> {
 
+    boolean updateBy(int id, Passenger item);
     List<Passenger> getAllOf(int tripId);
 
     boolean registerTrip(int id, int tripId);

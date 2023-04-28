@@ -3,6 +3,7 @@ package com.airport.model;
 import com.airport.validator.Validator;
 
 import java.sql.Date;
+import java.util.Objects;
 
 public class Company {
 
@@ -58,5 +59,18 @@ public class Company {
                 ", name='" + name + '\'' +
                 ", foundDate=" + foundDate +
                 "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Company company = (Company) o;
+        return name.equals(company.name) && foundDate.equals(company.foundDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, foundDate);
     }
 }

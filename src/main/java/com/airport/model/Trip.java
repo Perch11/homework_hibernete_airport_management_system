@@ -29,6 +29,18 @@ public class Trip {
         setTimeOut(timeOut);
         setTimeIn(timeIn);
     }
+    public Trip(
+                final String airplane,
+                final String townFrom,
+                final String townTo,
+                final Timestamp timeOut,
+                final Timestamp timeIn) {
+        setAirplane(airplane);
+        setTownFrom(townFrom);
+        setTownTo(townTo);
+        setTimeOut(timeOut);
+        setTimeIn(timeIn);
+    }
 
     public Trip() {
     }

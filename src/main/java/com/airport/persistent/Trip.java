@@ -11,7 +11,7 @@ public class Trip {
     private int tripNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false,updatable = false)
     private Company company;
 
     @Column(nullable = false, length = 24)
