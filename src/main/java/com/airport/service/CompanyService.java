@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import javax.persistence.TypedQuery;
+import java.sql.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -100,7 +101,6 @@ public class CompanyService implements CompanyRepository {
         }
     }
 
-
     @Override
     public Company save(Company item) {
         checkNull(item);
@@ -123,9 +123,8 @@ public class CompanyService implements CompanyRepository {
     }
 
     @Override
-    public boolean updateBy(int id, Company item) {
+    public boolean updateBy(int id, String newName, Date newFoundDate) {
         checkId(id);
-        checkNull(item);
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
@@ -135,8 +134,12 @@ public class CompanyService implements CompanyRepository {
                 transaction.rollback();
                 return false;
             }
-            company.setName(item.getName());
-            company.setFoundDate(item.getFoundDate());
+            if(!validateStringIsEmptyOrNull(newName)){
+                company.setName(newName);
+            }
+            if(!validateObjectNull(newFoundDate)){
+                company.setFoundDate(newFoundDate);
+            }
             transaction.commit();
             return true;
         } catch (HibernateException e) {
