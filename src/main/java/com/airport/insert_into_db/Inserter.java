@@ -19,10 +19,10 @@ import java.util.List;
 
 
 public class Inserter {
-     Session session;
+
 
     private static final String ROOT_PATH =
-            "C:\\Users\\Perch\\IdeaProjects\\homework_hibernete_airport_management_system\\src\\main\\resources\\";
+            "C:\\Users\\Perch\\IdeaProjects\\homework_hibernate_airport_management_system\\src\\main\\resources\\";
     private static final Path PATH_COMPANY_TXT = Path.of(ROOT_PATH + "companies.txt");
     private static final Path PATH_ADDRESS_TXT = Path.of(ROOT_PATH + "addresses.txt");
     private static final Path PATH_PASSENGER_TXT = Path.of(ROOT_PATH + "passengers.txt");
@@ -32,17 +32,14 @@ public class Inserter {
 
     public void insertCompanyTable() {
         Transaction transaction = null;
-
         List<String> lines = readLinesOfFileFrom(PATH_COMPANY_TXT);
 
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             for (int i = 0; i < (lines != null ? lines.size() : 0); i++) {
                 String line = lines.get(i);
                 String[] fields = line.split(",");
-
                 String[] dateParts = fields[1].split("/");
 
                 Company company = new Company();
@@ -63,23 +60,19 @@ public class Inserter {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        }finally {
-            session.close();
         }
     }
 
 
     public void insertAddressTable() {
-        FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            transaction = session.beginTransaction();
-            fileReader = new FileReader(
-                    "C:\\Users\\Perch\\IdeaProjects\\homework_hibernete\\src\\main\\resources\\addresses.txt");
-            bufferedReader = new BufferedReader(fileReader);
 
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession();
+             FileReader fileReader = new FileReader(
+                     "C:\\Users\\Perch\\IdeaProjects\\homework_hibernate\\src\\main\\resources\\addresses.txt");
+             BufferedReader bufferedReader = new BufferedReader(fileReader))
+        {
+            transaction = session.beginTransaction();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] data = line.split(",");
@@ -95,27 +88,16 @@ public class Inserter {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        } finally {
-            try {
-                assert fileReader != null;
-                fileReader.close();
-                assert bufferedReader != null;
-                bufferedReader.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }finally {
-                session.close();
-            }
         }
     }
 
     public void insertPassengerTable() {
 
         Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        List<String> lines = readLinesOfFileFrom(PATH_PASSENGER_TXT);
+
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            List<String> lines = readLinesOfFileFrom(PATH_PASSENGER_TXT);
 
             for (int i = 0; i < (lines != null ? lines.size() : 0); i++) {
                 String line = lines.get(i);
@@ -140,17 +122,15 @@ public class Inserter {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        }finally {
-            session.close();
         }
     }
 
     public void insertTripTable() {
         Transaction transaction = null;
+        List<String> lines = readLinesOfFileFrom(PATH_TRIP_TXT);
 
-        try {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            List<String> lines = readLinesOfFileFrom(PATH_TRIP_TXT);
             for (int i = 0; i < (lines != null ? lines.size() : 0); i++) {
                 String line = lines.get(i);
                 String[] fields = line.split(",");
@@ -183,7 +163,7 @@ public class Inserter {
         Transaction transaction = null;
         List<String> lines = readLinesOfFileFrom(PATH_PASSINTRIP_TXT);
 
-        try {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             for (int i = 0; i < (lines != null ? lines.size() : 0); i++) {
@@ -195,13 +175,11 @@ public class Inserter {
                     transaction.rollback();
                     return;
                 }
-
                 Passenger passenger = session.get(Passenger.class, Integer.parseInt(fields[1]));
                 if (passenger == null) {
                     transaction.rollback();
                     return;
                 }
-
                 PassInTrip passInTrip = new PassInTrip();
                 passInTrip.setTrip(trip);
                 passInTrip.setPassenger(passenger);
@@ -210,7 +188,6 @@ public class Inserter {
 
                 session.save(passInTrip);
             }
-
             transaction.commit();
         } catch (Exception e) {
             assert transaction != null;
@@ -229,12 +206,5 @@ public class Inserter {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public void setSession(Session session) {
-        if (session == null) {
-            throw new NullPointerException("Passed null value as 'session': ");
-        }
-        this.session = session;
     }
 }
