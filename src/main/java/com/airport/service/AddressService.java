@@ -131,22 +131,23 @@ public class AddressService implements AddressRepository {
     }
 
     @Override
-    public boolean updateBy(int id, Address item) {
-
+    public boolean updateBy(int id,String newCity,String newCountry) {
         checkId(id);
-        checkNull(item);
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession();
         ) {
             transaction = session.beginTransaction();
             com.airport.persistent.Address address = session.get(com.airport.persistent.Address.class, id);
 
-            if (address == null) {
+            if (validateObjectNull(address)) {
                 transaction.rollback();
                 return false;
             }
-            address.setCity(item.getCity());
-            address.setCountry(item.getCountry());
+            if(!validateStringIsEmptyOrNull(newCity)){
+                address.setCity(newCity);
+            }if(!validateStringIsEmptyOrNull(newCountry)){
+                address.setCountry(newCountry);
+            }
             transaction.commit();
             return true;
         } catch (Exception e) {
