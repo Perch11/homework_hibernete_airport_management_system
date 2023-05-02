@@ -4,9 +4,7 @@ import com.airport.convert_classes.mod_to_per.ModToPerCompany;
 import com.airport.convert_classes.mod_to_per.ModToPerTrip;
 import com.airport.convert_classes.per_to_mod.PerToModTrip;
 import com.airport.hibernate.HibernateUtil;
-import com.airport.model.Company;
 import com.airport.model.Trip;
-import com.airport.persistent.Address;
 import com.airport.repository.TripRepository;
 import com.airport.validator.Validator;
 import org.hibernate.HibernateException;
@@ -19,16 +17,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.airport.validator.Validator.*;
+
 public class TripService implements TripRepository {
-    Session session;
+
+
     private static final PerToModTrip PER_TO_MOD = new PerToModTrip();
     private static final ModToPerTrip MOD_TO_PER = new ModToPerTrip();
+
     private static final ModToPerCompany MOD_TO_PER_COMPANY = new ModToPerCompany();
     private static final CompanyService COMPANY_SERVICE = new CompanyService();
 
     @Override
     public Set<Trip> getAllFrom(String city) {
-        Validator.validateString(city);
+        validateString(city);
         Set<Trip> trips = new LinkedHashSet<>();
         for (Trip trip : getAll()) {
             if (trip.getTownFrom().equals(city)) {
@@ -40,7 +42,7 @@ public class TripService implements TripRepository {
 
     @Override
     public Set<Trip> getAllTo(String city) {
-        Validator.validateString(city);
+        validateString(city);
         Set<Trip> trips = new LinkedHashSet<>();
         for (Trip trip : getAll()) {
             if (trip.getTownTo().equals(city)) {
@@ -55,8 +57,7 @@ public class TripService implements TripRepository {
         Validator.checkId(id);
         Transaction transaction = null;
 
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             com.airport.persistent.Trip trip = session.get(com.airport.persistent.Trip.class, id);
             if (trip == null) {
@@ -69,8 +70,6 @@ public class TripService implements TripRepository {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        } finally {
-            session.close();
         }
     }
 
@@ -78,12 +77,11 @@ public class TripService implements TripRepository {
     public Set<Trip> getAll() {
         Transaction transaction = null;
 
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            TypedQuery<com.airport.persistent.Trip> query = session.createQuery("FROM Trip ", com.airport.persistent.Trip.class);
+            TypedQuery<com.airport.persistent.Trip> tripTypedQuery = session.createQuery("FROM Trip ", com.airport.persistent.Trip.class);
 
-            List<com.airport.persistent.Trip> listpersistent = query.getResultList();
+            List<com.airport.persistent.Trip> listpersistent = tripTypedQuery.getResultList();
             if (listpersistent.isEmpty()) {
                 transaction.rollback();
                 return null;
@@ -101,43 +99,39 @@ public class TripService implements TripRepository {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        } finally {
-            session.close();
         }
     }
 
     @Override
     public Set<Trip> get(int offset, int perPage, String sort) {
-//        //Validator.checkParamGetMethodCompany(offset, perPage, sort);
-//
-//        Transaction transaction = null;
-//        try {
-//            session = HibernateUtil.getSessionFactory().openSession();
-//            transaction = session.beginTransaction();
-//            TypedQuery<List<com.airport.persistent.Company>> companies = session.createQuery("FROM Company order by " + sort);
-//            companies.setFirstResult(offset);
-//            companies.setMaxResults(perPage);
-//
-//            if (companies.getResultList().isEmpty()) {
-//                transaction.commit();
-//                return null;
-//            }
-//            Set<Company> companySet = new LinkedHashSet<>(companies.getResultList().size());
-//
-//            for (int i = 0; i < companies.getResultList().size(); i++) {
-//                com.airport.persistent.Company tempCompany = (com.airport.persistent.Company) companies.getResultList().get(i);
-//                companySet.add(PER_TO_MOD.getModelFromPersistent(tempCompany));
-//            }
-//            transaction.commit();
-//            return companySet.isEmpty() ? null : companySet;
-//        } catch (HibernateException e) {
-//            assert transaction != null;
-//            transaction.rollback();
-//            throw new RuntimeException(e);
-//        } finally {
-//            session.close();
-//        }
-        return null;
+        Validator.checkParamGetMethodTrip(offset, perPage, sort);
+
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+
+            TypedQuery<com.airport.persistent.Trip> query = session.createQuery("FROM Trip order by " + sort);
+            query.setFirstResult(offset);
+            query.setMaxResults(perPage);
+
+            if (query.getResultList().isEmpty()) {
+                transaction.rollback();
+                return null;
+            }
+            Set<com.airport.model.Trip> tripSet = new LinkedHashSet<>(query.getResultList().size());
+
+            for (int i = 0; i < query.getResultList().size(); i++) {
+                com.airport.persistent.Trip tempTrip = query.getResultList().get(i);
+                tripSet.add(PER_TO_MOD.getModelFromPersistent(tempTrip));
+            }
+
+            transaction.commit();
+            return tripSet;
+        } catch (HibernateException e) {
+            assert transaction != null;
+            transaction.rollback();
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -174,42 +168,39 @@ public class TripService implements TripRepository {
 
 
     @Override
-    public boolean updateBy(int id, String airplane, String townFrom,
-                            String townTo,
-                            Timestamp timeOut,
-                            Timestamp timeIn) {
+    public boolean updateBy(int id, String airplane, String townFrom, String townTo, Timestamp timeOut, Timestamp timeIn) {
         Validator.checkId(id);
 
         Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             com.airport.persistent.Trip trip = session.get(com.airport.persistent.Trip.class, id);
-            if (trip == null){
+            if (validateObjectNull(trip)) {
                 transaction.rollback();
                 return false;
             }
-            if(!(airplane == null || airplane.isEmpty()) ){
+            if (!validateStringIsEmptyOrNull(airplane)) {
                 trip.setAirplane(airplane);
-            }if(!(townFrom == null || townFrom.isEmpty()) ){
+            }
+            if (!validateStringIsEmptyOrNull(townFrom)) {
                 trip.setTownFrom(townFrom);
-            }if(!(townTo == null || townTo.isEmpty()) ){
+            }
+            if (!validateStringIsEmptyOrNull(townTo)) {
                 trip.setTownTo(townTo);
-            }if(!(timeOut == null) ){
+            }
+            if (!validateObjectNull(timeOut)) {
                 trip.setTimeOut(timeOut);
-            }if(!(timeIn == null) ){
+            }
+            if (!validateObjectNull(timeIn)) {
                 trip.setTimeIn(timeIn);
             }
-
             transaction.commit();
             return true;
         } catch (HibernateException e) {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        } finally {
-            session.close();
         }
     }
 
@@ -219,14 +210,13 @@ public class TripService implements TripRepository {
      */
     @Override
     public boolean deleteBy(int id) {
-        Validator.checkId(id);
+        checkId(id);
         if (existsPassInTripBy(id)) {
             System.out.println("First remove PassInTrip by " + id + " in PassInTrip table: ");
             return false;
         }
         Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
 
             com.airport.persistent.Trip trip = session.get(com.airport.persistent.Trip.class, id);
@@ -242,8 +232,6 @@ public class TripService implements TripRepository {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        } finally {
-            session.close();
         }
     }
 
@@ -252,8 +240,7 @@ public class TripService implements TripRepository {
 
         Transaction transaction = null;
 
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             String hql = "select p from PassInTrip as p where p.trip = :tripId";
             TypedQuery<com.airport.persistent.PassInTrip> passInTripTypedQuery = session.createQuery(hql);
@@ -265,8 +252,6 @@ public class TripService implements TripRepository {
             assert transaction != null;
             transaction.rollback();
             throw new RuntimeException(e);
-        } finally {
-            session.close();
         }
     }
 }

@@ -2,6 +2,8 @@ package com.airport.model;
 
 import com.airport.validator.Validator;
 
+import java.util.Objects;
+
 public class Address {
 
     private int id;
@@ -47,6 +49,13 @@ public class Address {
     public void setCity(final String city) {
         Validator.validateString(city);
         this.city = city;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address that = (Address) o;
+        return Objects.equals(country, that.country) && Objects.equals(city, that.city);
     }
 
     @Override

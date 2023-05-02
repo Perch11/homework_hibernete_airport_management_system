@@ -4,6 +4,7 @@ import com.airport.convert_classes.mod_to_per.ModToPerAddress;
 import com.airport.convert_classes.per_to_mod.PerToModAddress;
 import com.airport.hibernate.HibernateUtil;
 import com.airport.model.Address;
+import com.airport.model.Company;
 import com.airport.repository.AddressRepository;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -204,5 +205,15 @@ public class AddressService implements AddressRepository {
             transaction.rollback();
             throw new RuntimeException(e);
         }
+    }
+    public int getId(com.airport.model.Address address) {
+        checkNull(address);
+
+        for (Address item : getAll()) {
+            if (address.equals(item)) {
+                return item.getId();
+            }
+        }
+        return -1;
     }
 }
