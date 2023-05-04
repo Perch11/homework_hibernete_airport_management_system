@@ -46,6 +46,7 @@ public class AddressService implements AddressRepository {
             throw new RuntimeException(e);
         }
     }
+
     @Override
     public Set<Address> getAll() {
         Transaction transaction = null;
@@ -113,9 +114,13 @@ public class AddressService implements AddressRepository {
     public Address save(Address item) {
         checkNull(item);
 
+        if (exists(item)) {
+            System.out.println("[" + item.getCountry() + ", " + item.getCity() + "] address already exists: ");
+            return null;
+        }
+
         Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession();
-        ) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             com.airport.persistent.Address address = MOD_TO_PER.getPersistentFromModel(item);
 
@@ -132,7 +137,7 @@ public class AddressService implements AddressRepository {
     }
 
     @Override
-    public boolean updateBy(int id,String newCity,String newCountry) {
+    public boolean updateBy(int id, String newCity, String newCountry) {
         checkId(id);
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession();
@@ -144,9 +149,10 @@ public class AddressService implements AddressRepository {
                 transaction.rollback();
                 return false;
             }
-            if(!validateStringIsEmptyOrNull(newCity)){
+            if (!validateStringIsEmptyOrNull(newCity)) {
                 address.setCity(newCity);
-            }if(!validateStringIsEmptyOrNull(newCountry)){
+            }
+            if (!validateStringIsEmptyOrNull(newCountry)) {
                 address.setCountry(newCountry);
             }
             transaction.commit();
@@ -162,6 +168,10 @@ public class AddressService implements AddressRepository {
     public boolean deleteBy(int id) {
         checkId(id);
 
+        if (getBy(id) == null) {
+            System.out.println("Address with " + id + " id not found: ");
+            return false;
+        }
         if (existsPassengerBy(id)) {
             System.out.println("First remove address by " + id + " in passenger table: ");
             return false;
@@ -170,13 +180,8 @@ public class AddressService implements AddressRepository {
         try (Session session = HibernateUtil.getSessionFactory().openSession();
         ) {
             transaction = session.beginTransaction();
-            com.airport.persistent.Address address = session.get(com.airport.persistent.Address.class, id);
 
-            if (address == null) {
-                transaction.rollback();
-                return false;
-            }
-            session.delete(address);
+            session.delete(session.get(com.airport.persistent.Address.class, id));
             transaction.commit();
             return true;
         } catch (HibernateException e) {
@@ -184,6 +189,18 @@ public class AddressService implements AddressRepository {
             transaction.rollback();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean exists(com.airport.model.Address address) {
+        checkNull(address);
+
+        for (Address item : getAll()) {
+            if (address.equals(item)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean existsPassengerBy(int addressId) {
@@ -206,6 +223,8 @@ public class AddressService implements AddressRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
     public int getId(com.airport.model.Address address) {
         checkNull(address);
 
