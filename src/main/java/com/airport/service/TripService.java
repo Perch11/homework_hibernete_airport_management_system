@@ -5,6 +5,7 @@ import com.airport.convert_classes.mod_to_per.ModToPerTrip;
 import com.airport.convert_classes.per_to_mod.PerToModTrip;
 import com.airport.hibernate.HibernateUtil;
 import com.airport.model.Trip;
+import com.airport.persistent.Company;
 import com.airport.repository.TripRepository;
 import com.airport.validator.Validator;
 import org.hibernate.HibernateException;
@@ -23,9 +24,7 @@ public class TripService implements TripRepository {
 
 
     private static final PerToModTrip PER_TO_MOD = new PerToModTrip();
-    private static final ModToPerTrip MOD_TO_PER = new ModToPerTrip();
 
-    private static final ModToPerCompany MOD_TO_PER_COMPANY = new ModToPerCompany();
     private static final CompanyService COMPANY_SERVICE = new CompanyService();
 
     @Override
@@ -124,7 +123,6 @@ public class TripService implements TripRepository {
                 com.airport.persistent.Trip tempTrip = query.getResultList().get(i);
                 tripSet.add(PER_TO_MOD.getModelFromPersistent(tempTrip));
             }
-
             transaction.commit();
             return tripSet;
         } catch (HibernateException e) {
@@ -134,36 +132,69 @@ public class TripService implements TripRepository {
         }
     }
 
-    /**
-     * @param item
-     * @return
-     */
-    //TODO
+    @Override
+    public boolean exists(com.airport.model.Trip trip) {
+        checkNull(trip);
+
+        for (Trip item : getAll()) {
+            if (trip.equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int getId(com.airport.model.Trip trip) {
+        checkNull(trip);
+
+        for (com.airport.model.Trip item : getAll()) {
+            if (trip.equals(item)) {
+                return item.getTripNumber();
+            }
+        }
+        return -1;
+    }
+
     @Override
     public Trip save(Trip item) {
-//        Validator.checkNull(item);
-//        int companyId = COMPANY_SERVICE.getId(item.getCompany());
-//
-//
-//        Transaction transaction = null;
-//        try {
-//            session = HibernateUtil.getSessionFactory().openSession();
-//            transaction = session.beginTransaction();
-//            com.airport.persistent.Trip trip = MOD_TO_PER.getPersistentFromModel(item);
-//
-//            if (companyId == -1) {
-//
-//            }
-//
-//
-//        } catch (HibernateException e) {
-//            assert transaction != null;
-//            transaction.rollback();
-//            throw new RuntimeException(e);
-//        } finally {
-//            session.close();
-//        }
-        return null;
+        checkNull(item);
+        if (exists(item)) {
+            System.out.println("[" + item + "] address already exists: ");
+            return null;
+        }
+        int companyId = COMPANY_SERVICE.getId(item.getCompany());
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+
+            transaction = session.beginTransaction();
+            com.airport.persistent.Trip trip = new com.airport.persistent.Trip();
+            trip.setTripNumber(item.getTripNumber());
+            trip.setTimeIn(item.getTimeIn());
+            trip.setTimeOut(item.getTimeOut());
+            trip.setAirplane(item.getAirplane());
+            trip.setTownFrom(item.getTownFrom());
+            trip.setTownTo(item.getTownTo());
+            if (companyId > 0) {
+                trip.setCompany(session.get(Company.class, companyId));
+            } else {
+                Company newCompany = new Company();
+                newCompany.setName(item.getCompany().getName());
+                newCompany.setFoundDate(item.getCompany().getFoundDate());
+
+                session.save(newCompany);
+                trip.setCompany(newCompany);
+            }
+            session.save(trip);
+            item.setTripNumber(trip.getTripNumber());
+            transaction.commit();
+            return item;
+
+        } catch (HibernateException e) {
+            assert transaction != null;
+            transaction.rollback();
+            throw new RuntimeException(e);
+        }
     }
 
 
