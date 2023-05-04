@@ -3,6 +3,7 @@ package com.airport.model;
 import com.airport.validator.Validator;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 public class Trip {
 
@@ -119,5 +120,18 @@ public class Trip {
                 ", timeOut=" + timeOut +
                 ", timeIn=" + timeIn +
                 "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Trip trip = (Trip) o;
+        return Objects.equals(company, trip.company) && Objects.equals(airplane, trip.airplane) && Objects.equals(townFrom, trip.townFrom) && Objects.equals(townTo, trip.townTo) && Objects.equals(timeOut, trip.timeOut) && Objects.equals(timeIn, trip.timeIn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(company, airplane, townFrom, townTo, timeOut, timeIn);
     }
 }

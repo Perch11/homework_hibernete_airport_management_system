@@ -2,6 +2,8 @@ package com.airport.model;
 
 import com.airport.validator.Validator;
 
+import java.util.Objects;
+
 public class Passenger {
 
     private int id;
@@ -74,5 +76,18 @@ public class Passenger {
                 ", phone='" + phone + '\'' +
                 ", address=" + address +
                 "}\n";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Passenger passenger = (Passenger) o;
+        return Objects.equals(name, passenger.name) && Objects.equals(phone, passenger.phone) && address.equals(passenger.getAddress());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, phone, address);
     }
 }
