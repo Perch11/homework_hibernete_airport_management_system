@@ -104,6 +104,10 @@ public class CompanyService implements CompanyRepository {
     @Override
     public Company save(Company item) {
         checkNull(item);
+        if (exists(item)) {
+            System.out.println("[" + item + "] company already exists: ");
+            return null;
+        }
 
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -131,13 +135,14 @@ public class CompanyService implements CompanyRepository {
             transaction = session.beginTransaction();
             com.airport.persistent.Company company = session.get(com.airport.persistent.Company.class, id);
             if (company == null) {
+                System.out.println("Company with " + id + " id not found: ");
                 transaction.rollback();
                 return false;
             }
-            if(!validateStringIsEmptyOrNull(newName)){
+            if (!validateStringIsEmptyOrNull(newName)) {
                 company.setName(newName);
             }
-            if(!validateObjectNull(newFoundDate)){
+            if (!validateObjectNull(newFoundDate)) {
                 company.setFoundDate(newFoundDate);
             }
             transaction.commit();
@@ -176,6 +181,31 @@ public class CompanyService implements CompanyRepository {
         }
     }
 
+
+    @Override
+    public boolean exists(com.airport.model.Company company) {
+        checkNull(company);
+
+        for (Company item : getAll()) {
+            if (company.equals(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int getId(com.airport.model.Company company) {
+        checkNull(company);
+
+        for (Company item : getAll()) {
+            if (company.equals(item)) {
+                return item.getId();
+            }
+        }
+        return -1;
+    }
+
     private boolean existsTripBy(int companyId) {
         checkId(companyId);
 
@@ -194,28 +224,6 @@ public class CompanyService implements CompanyRepository {
             transaction.rollback();
             throw new RuntimeException(e);
         }
-    }
-
-    public boolean exists(com.airport.model.Company company) {
-        checkNull(company);
-
-        for (Company item : getAll()) {
-            if (company.equals(item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public int getId(com.airport.model.Company company) {
-        checkNull(company);
-
-        for (Company item : getAll()) {
-            if (company.equals(item)) {
-                return item.getId();
-            }
-        }
-        return -1;
     }
 
 }
