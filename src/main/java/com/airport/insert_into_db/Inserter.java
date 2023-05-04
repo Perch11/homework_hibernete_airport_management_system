@@ -22,7 +22,7 @@ public class Inserter {
 
 
     private static final String ROOT_PATH =
-            "C:\\Users\\Perch\\IdeaProjects\\homework_hibernate_airport_management_system\\src\\main\\resources\\";
+            "src/main/resources/";
     private static final Path PATH_COMPANY_TXT = Path.of(ROOT_PATH + "companies.txt");
     private static final Path PATH_ADDRESS_TXT = Path.of(ROOT_PATH + "addresses.txt");
     private static final Path PATH_PASSENGER_TXT = Path.of(ROOT_PATH + "passengers.txt");
@@ -66,12 +66,14 @@ public class Inserter {
 
     public void insertAddressTable() {
 
+
         Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession();
-             FileReader fileReader = new FileReader(
-                     "C:\\Users\\Perch\\IdeaProjects\\homework_hibernate\\src\\main\\resources\\addresses.txt");
-             BufferedReader bufferedReader = new BufferedReader(fileReader))
-        {
+
+        try(Session session = HibernateUtil.getSessionFactory().openSession();
+            FileReader fileReader = new FileReader(
+                    "src/main/resources/addresses.txt");
+            BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+
             transaction = session.beginTransaction();
             String line;
             while ((line = bufferedReader.readLine()) != null) {
