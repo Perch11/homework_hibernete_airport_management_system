@@ -6,7 +6,7 @@ public interface CommonRepository<T> {
 
 
     T getBy(int id);
-
+    int getId(T item);
 
     Set<T> getAll();
 
@@ -14,7 +14,8 @@ public interface CommonRepository<T> {
 
     T save(T item);
 
-   // boolean updateBy(int id, T item);
+
+    boolean exists(T item);
 
     boolean deleteBy(int id);
 }
