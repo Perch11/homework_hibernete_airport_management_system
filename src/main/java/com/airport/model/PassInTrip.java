@@ -1,8 +1,11 @@
 package com.airport.model;
 
-import com.airport.validator.Validator;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+import static com.airport.validator.Validator.*;
 
 public class PassInTrip {
 
@@ -12,18 +15,6 @@ public class PassInTrip {
     private Timestamp time;
     private String place;
 
-    public PassInTrip(final int id,
-                      final Trip trip,
-                      final Passenger passenger,
-                      final Timestamp time,
-                      final String place
-    ) {
-        this.id = id;
-        this.trip = trip;
-        this.passenger = passenger;
-        this.time = time;
-        this.place = place;
-    }
 
     public PassInTrip(
             final Trip trip,
@@ -32,10 +23,22 @@ public class PassInTrip {
             final String place
     ) {
 
-        this.trip = trip;
-        this.passenger = passenger;
-        this.time = time;
-        this.place = place;
+        setTrip(trip);
+        setPassenger(passenger);
+        setPlace(place);
+        setTime(time);
+    }
+    public PassInTrip(
+            final Trip trip,
+            final Passenger passenger,
+            final String place
+    ) {
+
+        setTrip(trip);
+        setPassenger(passenger);
+        setPlace(place);
+        this.time = Timestamp.valueOf(LocalDateTime.now());
+
     }
 
     public PassInTrip() {
@@ -46,7 +49,7 @@ public class PassInTrip {
     }
 
     public void setId(final int id) {
-        Validator.checkId(id);
+        checkId(id);
         this.id = id;
     }
 
@@ -55,7 +58,7 @@ public class PassInTrip {
     }
 
     public void setTrip(final Trip trip) {
-        Validator.checkNull(trip);
+        checkNull(trip);
         this.trip = trip;
     }
 
@@ -64,7 +67,7 @@ public class PassInTrip {
     }
 
     public void setPassenger(final Passenger passenger) {
-        Validator.checkNull(passenger);
+        checkNull(passenger);
         this.passenger = passenger;
     }
 
@@ -73,7 +76,7 @@ public class PassInTrip {
     }
 
     public void setTime(final Timestamp time) {
-        Validator.checkNull(time);
+        checkNull(time);
         this.time = time;
     }
 
@@ -82,7 +85,7 @@ public class PassInTrip {
     }
 
     public void setPlace(final String place) {
-        Validator.validateString(place);
+        validateString(place);
         this.place = place;
     }
 
@@ -95,5 +98,20 @@ public class PassInTrip {
                 ", time=" + time +
                 ", place='" + place + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PassInTrip that = (PassInTrip) o;
+        return Objects.equals(trip, that.trip) &&
+                Objects.equals(passenger, that.passenger) &&
+                Objects.equals(place, that.place);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(trip, passenger, place);
     }
 }

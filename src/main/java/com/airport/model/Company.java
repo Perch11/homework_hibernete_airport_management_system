@@ -1,21 +1,16 @@
 package com.airport.model;
 
-import com.airport.validator.Validator;
 
 import java.sql.Date;
 import java.util.Objects;
+
+import static com.airport.validator.Validator.*;
 
 public class Company {
 
     private int id;
     private String name;
     private Date foundDate;
-
-    public Company(final int id, final String name, final Date foundDate) {
-        setId(id);
-        setName(name);
-        setFoundDate(foundDate);
-    }
 
     public Company(final String name, final Date foundDate) {
         setName(name);
@@ -30,7 +25,7 @@ public class Company {
     }
 
     public void setId(final int id) {
-        Validator.checkId(id);
+        checkId(id);
         this.id = id;
     }
 
@@ -39,7 +34,7 @@ public class Company {
     }
 
     public void setName(final String name) {
-        Validator.validateString(name);
+        validateString(name);
         this.name = name;
     }
 
@@ -48,7 +43,7 @@ public class Company {
     }
 
     public void setFoundDate(final Date foundDate) {
-        Validator.checkNull(foundDate);
+        checkNull(foundDate);
         this.foundDate = foundDate;
     }
 

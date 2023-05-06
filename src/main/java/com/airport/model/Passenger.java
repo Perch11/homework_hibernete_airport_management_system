@@ -1,8 +1,9 @@
 package com.airport.model;
 
-import com.airport.validator.Validator;
 
 import java.util.Objects;
+
+import static com.airport.validator.Validator.*;
 
 public class Passenger {
 
@@ -11,15 +12,6 @@ public class Passenger {
     private String phone;
     private Address address;
 
-    public Passenger(final int id,
-                     final String name,
-                     final String phone,
-                     final Address address) {
-        setId(id);
-        setName(name);
-        setPhone(phone);
-        setAddress(address);
-    }
 
     public Passenger(final String name,
                      final String phone,
@@ -37,7 +29,7 @@ public class Passenger {
     }
 
     public void setId(final int id) {
-        Validator.checkId(id);
+        checkId(id);
         this.id = id;
     }
 
@@ -46,7 +38,7 @@ public class Passenger {
     }
 
     public void setName(final String name) {
-        Validator.validateString(name);
+        validateString(name);
         this.name = name;
     }
 
@@ -55,7 +47,7 @@ public class Passenger {
     }
 
     public void setPhone(final String phone) {
-        Validator.validateString(phone);
+        validateString(phone);
         this.phone = phone;
     }
 
@@ -64,7 +56,7 @@ public class Passenger {
     }
 
     public void setAddress(final Address address) {
-        Validator.checkNull(address);
+        checkNull(address);
         this.address = address;
     }
 
@@ -83,11 +75,13 @@ public class Passenger {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Passenger passenger = (Passenger) o;
-        return Objects.equals(name, passenger.name) && Objects.equals(phone, passenger.phone) && address.equals(passenger.getAddress());
+        return Objects.equals(name, passenger.name) &&
+                Objects.equals(phone, passenger.phone) &&
+                Objects.equals(address, passenger.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, phone, address);
+        return Objects.hash(name, phone, address);
     }
 }

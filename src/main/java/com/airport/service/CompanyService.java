@@ -33,6 +33,7 @@ public class CompanyService implements CompanyRepository {
             transaction = session.beginTransaction();
             com.airport.persistent.Company company = session.get(com.airport.persistent.Company.class, id);
             if (company == null) {
+                System.out.println("There is no company with " + id + " id: ");
                 transaction.rollback();
                 return null;
             }
@@ -53,6 +54,7 @@ public class CompanyService implements CompanyRepository {
             TypedQuery<com.airport.persistent.Company> query = session.createQuery("FROM Company ", com.airport.persistent.Company.class);
             List<com.airport.persistent.Company> companieslist = query.getResultList();
             if (companieslist.isEmpty()) {
+                System.out.println("There is no company:");
                 transaction.rollback();
                 return null;
             }
@@ -83,7 +85,8 @@ public class CompanyService implements CompanyRepository {
             companies.setMaxResults(perPage);
 
             if (companies.getResultList().isEmpty()) {
-                transaction.commit();
+                System.out.println("There is no company:");
+                transaction.rollback();
                 return null;
             }
             Set<Company> companySet = new LinkedHashSet<>(companies.getResultList().size());
@@ -108,6 +111,10 @@ public class CompanyService implements CompanyRepository {
             System.out.println("[" + item + "] company already exists: ");
             return null;
         }
+        if (doesExistWith(item.getName())) {
+            System.out.println("Company with " + item.getName() + " already exists: ");
+            return null;
+        }
 
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -129,6 +136,14 @@ public class CompanyService implements CompanyRepository {
     @Override
     public boolean updateBy(int id, String newName, Date newFoundDate) {
         checkId(id);
+        if (getBy(id) == null) {
+            System.out.println("Company with " + id + " id not found: ");
+            return false;
+        }
+        if (doesExistWith(newName)) {
+            System.out.println("Company with " + newName + " already exists: ");
+            return false;
+        }
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 
@@ -157,6 +172,10 @@ public class CompanyService implements CompanyRepository {
     @Override
     public boolean deleteBy(int id) {
         checkId(id);
+        if (getBy(id) == null) {
+            System.out.println("Company with " + id + " id not found: ");
+            return false;
+        }
         if (existsTripBy(id)) {
             System.out.println("First remove company by " + id + " in trip table: ");
             return false;
@@ -206,7 +225,8 @@ public class CompanyService implements CompanyRepository {
         return -1;
     }
 
-    private boolean existsTripBy(int companyId) {
+    @Override
+    public boolean existsTripBy(int companyId) {
         checkId(companyId);
 
         Transaction transaction = null;
@@ -224,6 +244,17 @@ public class CompanyService implements CompanyRepository {
             transaction.rollback();
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean doesExistWith(String name) {
+        validateString(name);
+
+        for (Company tempCompany : getAll()) {
+            if (tempCompany.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

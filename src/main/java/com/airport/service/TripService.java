@@ -60,6 +60,7 @@ public class TripService implements TripRepository {
             transaction = session.beginTransaction();
             com.airport.persistent.Trip trip = session.get(com.airport.persistent.Trip.class, id);
             if (trip == null) {
+                System.out.println("There is no trip with " + id + " id: ");
                 transaction.rollback();
                 return null;
             }
@@ -82,6 +83,7 @@ public class TripService implements TripRepository {
 
             List<com.airport.persistent.Trip> listpersistent = tripTypedQuery.getResultList();
             if (listpersistent.isEmpty()) {
+                System.out.println("There is no trip: ");
                 transaction.rollback();
                 return null;
             }
@@ -114,6 +116,7 @@ public class TripService implements TripRepository {
             query.setMaxResults(perPage);
 
             if (query.getResultList().isEmpty()) {
+                System.out.println("There is no trip: ");
                 transaction.rollback();
                 return null;
             }

@@ -3,7 +3,10 @@ package com.airport.model;
 import com.airport.validator.Validator;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
+
+import static com.airport.validator.Validator.*;
 
 public class Trip {
 
@@ -16,31 +19,30 @@ public class Trip {
     private Timestamp timeIn;
 
     public Trip(final int tripNumber,
-                final Company company,
                 final String airplane,
                 final String townFrom,
                 final String townTo,
                 final Timestamp timeOut,
                 final Timestamp timeIn) {
         setTripNumber(tripNumber);
-        setCompany(company);
         setAirplane(airplane);
         setTownFrom(townFrom);
         setTownTo(townTo);
         setTimeOut(timeOut);
         setTimeIn(timeIn);
     }
+
     public Trip(
+                final int tripNumber,
                 final String airplane,
                 final String townFrom,
-                final String townTo,
-                final Timestamp timeOut,
-                final Timestamp timeIn) {
+                final String townTo) {
+        setTripNumber(tripNumber);
         setAirplane(airplane);
         setTownFrom(townFrom);
         setTownTo(townTo);
-        setTimeOut(timeOut);
-        setTimeIn(timeIn);
+        timeIn = Timestamp.valueOf(LocalDateTime.now());
+        timeOut = Timestamp.valueOf(LocalDateTime.now());
     }
 
     public Trip() {
@@ -51,7 +53,7 @@ public class Trip {
     }
 
     public void setTripNumber(final int tripNumber) {
-        Validator.checkId(tripNumber);
+        checkId(tripNumber);
         this.tripNumber = tripNumber;
     }
 
@@ -60,7 +62,7 @@ public class Trip {
     }
 
     public void setCompany(final Company company) {
-        Validator.checkNull(company);
+        checkNull(company);
         this.company = company;
     }
 
@@ -69,7 +71,7 @@ public class Trip {
     }
 
     public void setAirplane(final String airplane) {
-        Validator.validateString(airplane);
+        validateString(airplane);
         this.airplane = airplane;
     }
 
@@ -78,7 +80,7 @@ public class Trip {
     }
 
     public void setTownFrom(final String townFrom) {
-        Validator.validateString(townFrom);
+        validateString(townFrom);
         this.townFrom = townFrom;
     }
 
@@ -87,7 +89,7 @@ public class Trip {
     }
 
     public void setTownTo(final String townTo) {
-        Validator.validateString(townTo);
+        validateString(townTo);
         this.townTo = townTo;
     }
 
@@ -96,7 +98,7 @@ public class Trip {
     }
 
     public void setTimeOut(final Timestamp timeOut) {
-        Validator.checkNull(timeOut);
+        checkNull(timeOut);
         this.timeOut = timeOut;
     }
 
@@ -105,7 +107,7 @@ public class Trip {
     }
 
     public void setTimeIn(final Timestamp timeIn) {
-        Validator.checkNull(timeIn);
+        checkNull(timeIn);
         this.timeIn = timeIn;
     }
 
@@ -127,7 +129,12 @@ public class Trip {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Trip trip = (Trip) o;
-        return Objects.equals(company, trip.company) && Objects.equals(airplane, trip.airplane) && Objects.equals(townFrom, trip.townFrom) && Objects.equals(townTo, trip.townTo) && Objects.equals(timeOut, trip.timeOut) && Objects.equals(timeIn, trip.timeIn);
+        return Objects.equals(company, trip.company) &&
+                Objects.equals(airplane, trip.airplane) &&
+                Objects.equals(townFrom, trip.townFrom) &&
+                Objects.equals(townTo, trip.townTo) &&
+                Objects.equals(timeOut, trip.timeOut) &&
+                Objects.equals(timeIn, trip.timeIn);
     }
 
     @Override

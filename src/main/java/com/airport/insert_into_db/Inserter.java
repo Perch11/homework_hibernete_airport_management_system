@@ -21,13 +21,12 @@ import java.util.List;
 public class Inserter {
 
 
-    private static final String ROOT_PATH =
-            "src/main/resources/";
+    private static final String ROOT_PATH = "src/main/resources/";
     private static final Path PATH_COMPANY_TXT = Path.of(ROOT_PATH + "companies.txt");
     private static final Path PATH_ADDRESS_TXT = Path.of(ROOT_PATH + "addresses.txt");
     private static final Path PATH_PASSENGER_TXT = Path.of(ROOT_PATH + "passengers.txt");
     private static final Path PATH_TRIP_TXT = Path.of(ROOT_PATH + "trip.txt");
-    private static final Path PATH_PASSINTRIP_TXT = Path.of(ROOT_PATH + "pass_in_trip.txt");
+    private static final Path PATH_PASS_IN_TRIP_TXT = Path.of(ROOT_PATH + "pass_in_trip.txt");
 
 
     public void insertCompanyTable() {
@@ -163,7 +162,7 @@ public class Inserter {
 
     public void insertPassInTripTable() {
         Transaction transaction = null;
-        List<String> lines = readLinesOfFileFrom(PATH_PASSINTRIP_TXT);
+        List<String> lines = readLinesOfFileFrom(PATH_PASS_IN_TRIP_TXT);
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();

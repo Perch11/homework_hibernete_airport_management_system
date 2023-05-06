@@ -5,7 +5,7 @@ import com.airport.model.Trip;
 import com.airport.validator.Validator;
 
 public class ModToPerTrip extends ModToPer<Trip, com.airport.persistent.Trip> {
-    private static final ModToPerCompany MOD_TO_PER = new ModToPerCompany();
+    private static final ModToPerCompany MOD_TO_PER_COMPANY = new ModToPerCompany();
 
     @Override
     public com.airport.persistent.Trip getPersistentFromModel(Trip model) {
@@ -13,7 +13,7 @@ public class ModToPerTrip extends ModToPer<Trip, com.airport.persistent.Trip> {
         Validator.checkNull(model);
         com.airport.persistent.Trip persistent = new com.airport.persistent.Trip();
         persistent.setTripNumber(model.getTripNumber());
-        persistent.setCompany(MOD_TO_PER.getPersistentFromModel(model.getCompany()));
+        persistent.setCompany(MOD_TO_PER_COMPANY.getPersistentFromModel(model.getCompany()));
         persistent.setAirplane(model.getAirplane());
         persistent.setTimeIn(model.getTimeIn());
         persistent.setTimeOut(model.getTimeOut());

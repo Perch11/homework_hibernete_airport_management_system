@@ -9,9 +9,10 @@ public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
     private int id;
 
-    @Column(nullable = false, length = 24)
+    @Column(nullable = false, length = 24,unique = true)
     private String name;
 
     @Column(name = "found_date", nullable = false, updatable = false)

@@ -1,12 +1,15 @@
 package com.airport.persistent;
 
 import javax.persistence.*;
+
 @Entity
-@Table(name = "address")
+@Table(name = "address",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"country", "city"})})
 public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
     private int id;
 
     @Column(nullable = false, length = 50)

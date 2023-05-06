@@ -1,20 +1,16 @@
 package com.airport.model;
 
-import com.airport.validator.Validator;
+
 
 import java.util.Objects;
+
+import static com.airport.validator.Validator.*;
 
 public class Address {
 
     private int id;
     private String country;
     private String city;
-
-    public Address(int id, String country, String city) {
-        this.id = id;
-        this.country = country;
-        this.city = city;
-    }
 
     public Address(final String country, final String city) {
         setCountry(country);
@@ -29,7 +25,7 @@ public class Address {
     }
 
     public void setId(int id) {
-        Validator.checkId(id);
+        checkId(id);
         this.id = id;
     }
 
@@ -38,7 +34,7 @@ public class Address {
     }
 
     public void setCountry(final String country) {
-        Validator.validateString(country);
+        validateString(country);
         this.country = country;
     }
 
@@ -47,7 +43,7 @@ public class Address {
     }
 
     public void setCity(final String city) {
-        Validator.validateString(city);
+        validateString(city);
         this.city = city;
     }
 

@@ -14,7 +14,6 @@ public interface CommonRepository<T> {
 
     T save(T item);
 
-
     boolean exists(T item);
 
     boolean deleteBy(int id);

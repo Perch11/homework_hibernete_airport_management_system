@@ -4,10 +4,13 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "trip")
+@Table(name = "trip",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {
+                "company_id", "airplane", "town_from", "town_to", "time_out", "time_in"})})
 public class Trip {
 
     @Id
+    @Column(updatable = false)
     private int tripNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)

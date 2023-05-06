@@ -1,5 +1,6 @@
 package com.airport.repository;
 
+import com.airport.model.Address;
 import com.airport.model.Passenger;
 import com.airport.model.Trip;
 import com.airport.repository.common.CommonRepository;
@@ -8,11 +9,11 @@ import java.util.List;
 
 public interface PassengerRepository extends CommonRepository<Passenger> {
 
-    boolean updateBy(int id, Passenger item);
+    boolean updateBy(int id, String newName, String newPhone, Address newAddress);
     List<Passenger> getAllOf(int tripId);
 
-    boolean registerTrip(Passenger passenger, Trip trip);
+    public boolean cancelTrip(int tripId, int passengerId, String place);
 
-    boolean cancelTrip(int id, int tripId);
+    public boolean registerTrip(int tripId, Passenger passenger, String place);
 
 }

@@ -8,4 +8,7 @@ import java.sql.Date;
 public interface CompanyRepository extends CommonRepository<Company> {
 
     boolean updateBy(int id, String newName, Date newFoundDate);
+
+    boolean existsTripBy(int companyId);
+
 }
